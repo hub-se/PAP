@@ -19,22 +19,28 @@ void setup() {
   addTransitions(s5);
   Serial.begin(9600);
   Serial.println("Starting");
-  unsigned long t = millis();
-  unsigned long reps = 25000;
-  for (unsigned int i = 0; i < reps; i++){
-    s.setReached(i % 5);
+  for(int j = 0; j < 10; j++){
+    unsigned long t = millis();
+    unsigned long reps = 50000;
+    for (unsigned int i = 0; i < reps; i++){
+      //random(5); 
+      s.setReached(random(5));
+    }
+    unsigned long t_ = millis();
+    Serial.println("Finished");
+    Serial.print("Took ");
+    Serial.print(t_ - t);
+    Serial.print("ms for ");
+    Serial.print(reps);
+    Serial.println(" events");
+    Serial.print("That is ");
+    double x = t_-t;
+    Serial.print(x / reps);
+    Serial.println("ms per event");
   }
-  unsigned long t_ = millis();
   Serial.println("Finished");
-  Serial.print("Took ");
-  Serial.print(t_ - t);
-  Serial.print("ms for ");
-  Serial.print(reps);
-  Serial.println(" events");
-  Serial.print("That is ");
-  double x = t_-t;
-  Serial.print(x / reps);
-  Serial.println("ms per event");
+
+  
 }
 void addTransitions(State* state){
   Transition* t = s.addTransition(state, s.getState("s1"));
