@@ -4,6 +4,12 @@ refer to PSP
 
 how to set up Arduinos
 how to replicate evaluation
+## Replication Package
+This repository contains the code to
+* determine how much memory (SRAM) an Arduino has
+* our observer implementations as well as a Timescales implementation to generate online traces. The observer templates also determine how much memory (SRAM) the observer uses
+* determine how much time an our PAPs use compared to redeployment
+* evaluate how fast events can be processed
 
 Link to wiki for general contributions
 
