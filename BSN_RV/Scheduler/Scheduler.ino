@@ -1,13 +1,13 @@
 #include <SoftwareSerial.h>
-#include <Communication.h>
-SoftwareSerial temp(1, 2);
-SoftwareSerial pulse(3, 7); //Rx, Tx
-SoftwareSerial glucose(8,9); //Rx, Tx
-SoftwareSerial hub(10, 11); //Rx, Tx
+#include "Communication.h"
+SoftwareSerial pulse(50, 12); //Rx, Tx
+SoftwareSerial temp(51, 11);
+SoftwareSerial glucose(52,10); //Rx, Tx
+SoftwareSerial hub(53, 9); //Rx, Tx
 
 const int CYCLE = 13;
-const int noCycle = 12; 
-const int adapt = 14;
+const int noCycle = 8;
+const int adapt = A5;
 
 //this is the actual frq of the modules
 //this value is determiend by the central hub
@@ -51,7 +51,7 @@ float calculate_qos(float s[3]) {
   if (!pActive && !tActive) return -1;
   return a + b;
 }
-
+/*
 void plan() {
   //float c_curr = calculate_qos(actual);
   float c_curr = calculate_qos(strategy);
@@ -180,7 +180,7 @@ void plan() {
   }
   setpoint *= sensor_num;
 }
-
+*/
 
 
 
@@ -195,26 +195,26 @@ void plan() {
 
 void setup() {
   pinMode(CYCLE, OUTPUT);
-  pinMode(noCycle, OUTPUT); 
+  pinMode(noCycle, OUTPUT);
   digitalWrite(CYCLE, LOW);
   digitalWrite(noCycle, HIGH);
   pinMode(adapt, INPUT);
   pinMode(pPower, INPUT);
   pinMode(tPower, INPUT);
   pinMode(gPower, INPUT);
-  if(digitalRead(pPower) == HIGH)
-    pActive = true; 
+  /*if(digitalRead(pPower) == HIGH)
+    pActive = true;
   else
     pActive = false;
   if(digitalRead(tPower) == HIGH)
-    tActive = true; 
+    tActive = true;
   else
     tActive = false;
   if(digitalRead(gPower) == HIGH)
-    gActive = true; 
+    gActive = true;
   else
     gActive = false;
-
+*/
   temp.begin(9600);
   pulse.begin(9600);
   glucose.begin(9600);
@@ -228,33 +228,35 @@ void afterAdapt() {
   delay(1000);
   //scehduler cycle starts
   digitalWrite(noCycle, LOW);
-  digitalWrite(CYCLE, HIGH); 
-  float i = 0; 
+  digitalWrite(CYCLE, HIGH);
+  float i = 0;
   if(pActive){
     i+=250;
-    Communication::sendLongData(i, &pulse)
+    Communication::sendLongData(i, &pulse);
+    Serial.println("Temp sensor requested");
   }
   if(tActive){
     i+=250;
-    Communication::sendLongData(i, &temp)
+    Communication::sendLongData(i, &temp);
   }
   if(gActive){
     i+=250;
-    Communication::sendLongData(i, &glucose)
+    Communication::sendLongData(i, &glucose);
   }
   delay((int) i + 500);
-  digitalWrite(CYCLE, LOW); 
-  digitalWrite(noCycle, HIGH); 
+  digitalWrite(CYCLE, LOW);
+  digitalWrite(noCycle, HIGH);
 }
 
 void loop(){
   delay(1000);
   digitalWrite(noCycle, LOW);
-  digitalWrite(CYCLE, HIGH); 
+  digitalWrite(CYCLE, HIGH);
   delay(2000);
-  digitalWrite(CYCLE, LOW); 
-  digitalWrite(noCycle, HIGH); 
+  digitalWrite(CYCLE, LOW);
+  digitalWrite(noCycle, HIGH);
   if(digitalRead(adapt) == HIGH){
+    Serial.println("Adapation noticed");
     while(true) afterAdapt();
   }
 }

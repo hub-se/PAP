@@ -1,19 +1,29 @@
 #include <SoftwareSerial.h>
-#include <Message.h>;
-#include <Communication.h>
+#include "Message.h"
+#include "Communication.h"
 
 
-SoftwareSerial pulseSensor(51, 52); // Rx, Tx
+SoftwareSerial pulseSensor(50, 44); // Rx, Tx
 const byte pRDY = A0;
+const byte cycle = A8;
+const byte requesting = A15;
 
-SoftwareSerial temperatureSensor(53, 50); // Rx, Tx
-const byte tRDY = A8;
+SoftwareSerial temperatureSensor(51, 46); // Rx, Tx
+const byte tRDY = A2;
 
-SoftwareSerial glucoseeSensor(54, 55); // Rx, Tx
+SoftwareSerial glucoseSensor(52, 48); // Rx, Tx
 const byte gRDY = A4;
 
-const int adapt = 14;
+const int adapt = A6;
 
+bool tActive = true;
+const int tPower;
+
+bool pActive = true;
+const int pPower = 2;
+
+bool gActive = true;
+const int gPower;
 
 //SoftwareSerial adaptation(10, 11); //Rx, Tx //used to receive freq from adapt and send the intervals to the adaptation engine
 
@@ -42,7 +52,6 @@ void receive(SoftwareSerial *sensor, Message *m) {
   Serial.println(data[0]);
   Serial.print("risk: ");
   Serial.println(data[1]);
-  adaptation.listen();
 }
 
 void evaluateRisk() {
@@ -61,14 +70,18 @@ void evaluateRisk() {
 
 void setup() {
   // put your setup code here, to run once:
+  pinMode(requesting, OUTPUT);
+  digitalWrite(requesting, LOW);
   pinMode(pRDY, INPUT);
   pinMode(tRDY, INPUT);
   pinMode(gRDY, INPUT);
   pinMode(adapt, INPUT);
+  pinMode(cycle, INPUT);
 
   pulseSensor.begin(9600);
   glucoseSensor.begin(9600);
   temperatureSensor.begin(9600);
+  pulseSensor.listen();
   Serial.begin(9600);
   Serial.println("Hub starting");
 }
@@ -77,49 +90,59 @@ void loop() {
 
   if(digitalRead(adapt) == LOW){
     while(digitalRead(cycle) == LOW);
-    float i = 0; 
+    Serial.println("requesting data");
+    digitalWrite(requesting, HIGH);
+    float i = 0;
     //request data
 
     if(pActive){
       i+=250;
-      Communication::sendLongData(i, &pulse)
+      Communication::sendLongData(i, &pulseSensor);
     }
     if(tActive){
       i+=250;
-      Communication::sendLongData(i, &temp)
+      Communication::sendLongData(i, &temperatureSensor);
     }
     if(gActive){
       i+=250;
-      Communication::sendLongData(i, &glucose)
+      Communication::sendLongData(i, &glucoseSensor);
     }
-   
+
+  }
+  delay(50);
+  digitalWrite(requesting, LOW);
+
+  unsigned long time = millis();
+  while(millis() - time < 2000){
+   //receive data
+    if (digitalRead(pRDY) == HIGH) {
+      pulseSensor.listen();
+      Serial.println("receiving data from pulse sensor");
+      //receive(&pulseSensor, &pulseM);
+    }
+
+    //and here we check the temperature sensor
+    if (digitalRead(tRDY) == HIGH) {
+      //temperatureSensor.flush();
+      temperatureSensor.listen();
+      Serial.println("receiving data from temp sensor");
+      receive(&temperatureSensor, &temperatureM);
+    }
+
+    if (digitalRead(gRDY) == HIGH) {
+      //temperatureSensor.flush();
+      glucoseSensor.listen();
+      Serial.println("receiving data from glucose sensor");
+      receive(&glucoseSensor, &glucoseM);
+    }
   }
 
-  
 
-  //receive data
-  if (digitalRead(pRDY) == HIGH) {
-    pulseSensor.listen();
-    Serial.println("receiving data from pulse sensor");
-    receive(&pulseSensor, &pulseM);
-  }
 
-  //and here we check the temperature sensor
-  if (digitalRead(tRDY) == HIGH) {
-    //temperatureSensor.flush();
-    temperatureSensor.listen();
-    Serial.println("receiving data from temp sensor");
-    receive(&temperatureSensor, &temperatureM);
-  }
 
-  if (digitalRead(gRDY) == HIGH) {
-    //temperatureSensor.flush();
-    glucoseSensor.listen();
-    Serial.println("receiving data from glucose sensor");
-    receive(&glucoseSensor, &glucoseM);
-  }
 
-  evaluateRisk();
-  Serial.print("Risk estimated: ");
-  Serial.println(patientRisk);
+
+  //evaluateRisk();
+  //Serial.print("Risk estimated: ");
+  //Serial.println(patientRisk);
 }

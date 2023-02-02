@@ -1,4 +1,4 @@
-#include "Communication.h";
+#include "Communication.h"
 
 union share {
     float data;

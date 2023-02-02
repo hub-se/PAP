@@ -2,11 +2,11 @@
 #define DATAGENERATOR_H
 
 #include <Arduino.h>
-#include "Markov.h";
+#include "Markov.h"
 
 class DataGenerator {
   private:
-    
+
   public:
     DataGenerator(Markov* m);
     int nextState();

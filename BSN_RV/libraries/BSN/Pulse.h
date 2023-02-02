@@ -2,7 +2,7 @@
 #define PULSE_H
 
 #include <Arduino.h>
-#include "Range.h";
+#include "Range.h"
 
 class Pulse {
   public:

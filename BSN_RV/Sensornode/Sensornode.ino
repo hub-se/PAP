@@ -1,9 +1,9 @@
 #include <SoftwareSerial.h>
-#include <Pulse.h>
-#include <Markov.h>;
-#include <DataGenerator.h>;
-#include <Temperature.h>
-#include <Communication.h>
+#include "Pulse.h"
+#include "Markov.h"
+#include "DataGenerator.h"
+#include "Temperature.h"
+#include "Communication.h"
 
 //here you can choose the sensor you want
 //add new ones simply by adding the classes to the library
@@ -11,7 +11,7 @@
 Pulse model;
 
 //Communication:
-SoftwareSerial link(10, 51)//Rx, Tx, receives from bodyhub, sends to bodyhub. After adaptation, it receives from scheduler and sends to bodyhub
+SoftwareSerial link(10, 51);//Rx, Tx, receives from bodyhub, sends to bodyhub. After adaptation, it receives from scheduler and sends to bodyhub
 
 //hubRDY is used to show the hub that we want to transmit data, so that it can listen(). Otherwise the data might be lost
 const byte hubRDY = 53;
@@ -46,21 +46,20 @@ void setup() {
 }
 
 void loop() {
-  while(!link.available());//wait until data is requested 
-  float wait; 
+  while(!link.available());//wait until data is requested
+  float wait;
   while(link.available()){
     wait = Communication::receiveLongData(&link);
   }
-  delay((wait/2);
+  //delay(wait/2);
   digitalWrite(hubRDY, HIGH);
-  dataGen->nextState(); 
+  dataGen->nextState();
   float data = dataGen->calculateValue();
-  delay(wait/2); 
-  hub.write(data);
+  //delay(wait/2);
+  link.write(data);
+  delay(250);
   digitalWrite(hubRDY, LOW);
 
   Serial.print("Sent Data: ");
   Serial.println(data);
-  Serial.print("Sent Risk: ");
-  Serial.println(risk);
 }

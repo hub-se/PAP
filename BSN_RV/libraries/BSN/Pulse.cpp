@@ -1,4 +1,4 @@
-#include "Pulse.h";
+#include "Pulse.h"
 
 
 void Pulse::init() {
