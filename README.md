@@ -11,7 +11,7 @@ This repository contains the code to
 * evaluate how fast events can be processed
 * demonstrate our PAPs on the BSN
 
-For more general information on the PAPs, we refer to our wiki.
+For more general information on the PAPs, we refer to our wiki: https://github.com/hub-se/PAP/wiki.
 
 ## Team
 * [Marc Carwehl](https://github.com/carwehlm)
