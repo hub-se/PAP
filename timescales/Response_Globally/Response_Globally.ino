@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
 SoftwareSerial link(10, 6); // Rx, Tx
-bool failing = true; 
+bool failing = true;
 
 
 void setup() {
@@ -18,7 +18,8 @@ void loop() {
 //response pattern
   link.write(2); //P
   if(failing){
-    delay(5000);
+    int r = random(10000);
+    delay(5000 + r);
   }
 
   long w = random(5000);

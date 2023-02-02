@@ -2,10 +2,10 @@
 
 SoftwareSerial link(10, 6); // Rx, Tx
 
-bool failing = true; 
+bool failing = true;
 
-boolean scopeOpen; 
-unsigned long timebound = 500; 
+boolean scopeOpen;
+unsigned long timebound = 500;
 const int Q = 0;
 
 void setup() {
@@ -13,22 +13,23 @@ void setup() {
   Serial.begin(9600);
   link.begin(9600);
   link.listen();
-  scopeOpen = false; 
+  scopeOpen = false;
   Serial.println("receiver starting");
 }
 
 void loop() {
   if(failing){
     link.write(Q);
-    delay(timebound + 250);
+    int d = random(10000);
+    delay(timebound + d);
     link.write(1);
   }
-  int r = random(10); 
+  int r = random(10);
   if(r < 7){
     link.write(2); //P
   } else {
     link.write(1);  //R
-    scopeOpen = false; 
+    scopeOpen = false;
   }
   long w = random(timebound);
   delay(w);

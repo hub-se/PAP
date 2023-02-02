@@ -36,10 +36,13 @@ void loop() {
   if(r < 50){
     link.write(2); //P
     long w = random(5000 / responses);
-    for(int i = 0; i <= responses; i++){
-      delay(w);
-      link.write(3+i); // S
+    if(!failing){
+      for(int i = 0; i <= responses; i++){
+        delay(w);
+        link.write(3+i); // S
+      }
     }
+
   }
 
   long w = random(2000);
