@@ -12,6 +12,7 @@ This repository contains the code to
 * demonstrate our PAPs on the BSN
 
 For more general information on the PAPs, we refer to our wiki: https://github.com/hub-se/PAP/wiki.
+An arxiv-version of our corresponding SEAMS'23 paper is available at: https://arxiv.org/pdf/2303.16530.pdf
 
 ## Team
 * [Marc Carwehl](https://github.com/carwehlm)
